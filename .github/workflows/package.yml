@@ -1,0 +1,32 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: windows-2022
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: setup
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: 6.0.x
+    - name: publish
+      run: dotnet publish -c Release
+    - name: package
+      shell: pwsh
+      run: |
+        $root = pwd
+        cd bin/Release/net6.0/win-x64/publish
+        Compress-Archive -Path GooDic.Fluent.Plugin.dll,AngleSharp.dll,netstandard.dll -DestinationPath $root/GooDic.Fluent.Plugin.zip -Force -Verbose
+    - name: upload archive
+      uses: actions/upload-artifact@v3
+      with:
+        name: win-x64
+        path: GooDic.Fluent.Plugin.zip
