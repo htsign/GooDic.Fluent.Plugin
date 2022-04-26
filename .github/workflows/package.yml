@@ -19,14 +19,18 @@ jobs:
         dotnet-version: 6.0.x
     - name: publish
       run: dotnet publish -c Release
-    - name: package
+    - name: collect
       shell: pwsh
       run: |
         $root = pwd
         cd bin/Release/net6.0/win-x64/publish
-        Compress-Archive -Path GooDic.Fluent.Plugin.dll,AngleSharp.dll,netstandard.dll -DestinationPath $root/GooDic.Fluent.Plugin.zip -Force -Verbose
+        Copy-Item -Path GooDic.Fluent.Plugin.dll,AngleSharp.dll,netstandard.dll -Destination $root -Force -Verbose
     - name: upload archive
       uses: actions/upload-artifact@v3
       with:
-        name: win-x64
-        path: GooDic.Fluent.Plugin.zip
+        name: GooDic.Fluent.Plugin
+        path: |
+          GooDic.Fluent.Plugin.dll
+          AngleSharp.dll
+          netstandard.dll
+          pluginsInfo.json
